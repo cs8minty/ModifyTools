@@ -20,6 +20,7 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	private List<Material> axes = new ArrayList<Material>();
 	private List<Material> pickaxes = new ArrayList<Material>();
 	private List<Material> ores = new ArrayList<Material>();
+	private List<Material> logs = new ArrayList<Material>();
 	
 	@Override
 	public void onEnable() {
@@ -57,6 +58,8 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		ores.add(Material.LAPIS_ORE);
 		ores.add(Material.OBSIDIAN);
 		
+		logs.add(Material.LOG);
+		
 	}	
 	
 	@EventHandler
@@ -66,7 +69,7 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		Material holdItem = p.getItemInHand().getType();
 
 		if(axes.contains(holdItem)) {
-    		if(e.getClickedBlock().getType() == Material.LOG) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
+    		if(logs.contains(e.getClickedBlock().getType())) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
     	} else if(pickaxes.contains(holdItem)) {
     		if(ores.contains(e.getClickedBlock().getType())) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
     	} else p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
@@ -80,7 +83,8 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		
 		if(e.getBlock().getType() == Material.LOG) {
 			if(!axes.contains(p.getItemInHand().getType())) e.setCancelled(true);
-			p.sendMessage("You Need Axe!");
+			else p.sendMessage("You Need Axe!");
+			}
 		}
 		
 	}
