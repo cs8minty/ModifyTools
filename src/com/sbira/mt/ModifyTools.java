@@ -60,12 +60,12 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	}	
 	
 	@EventHandler
-	private void slowDigging(final PlayerInteractEvent e) {
+	private void slowDigging(PlayerInteractEvent e) {
 		
 		Player p = e.getPlayer();
 		Material holdItem = p.getItemInHand().getType();
 
-    	if(axes.contains(holdItem)) {
+		if(axes.contains(holdItem)) {
     		if(e.getClickedBlock().getType() == Material.LOG) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
     	} else if(pickaxes.contains(holdItem)) {
     		if(ores.contains(e.getClickedBlock().getType())) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
@@ -80,6 +80,7 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		
 		if(e.getBlock().getType() == Material.LOG) {
 			if(!axes.contains(p.getItemInHand().getType())) e.setCancelled(true);
+			p.sendMessage("You Need Axe!");
 		}
 		
 	}
