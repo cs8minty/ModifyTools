@@ -67,14 +67,16 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		
 		Player p = e.getPlayer();
 		Material holdItem = p.getItemInHand().getType();
-
-		if(axes.contains(holdItem) && logs.contains(e.getClickedBlock().getType())) {
-    		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
-    	} else p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
 		
-		if(pickaxes.contains(holdItem) && ores.contains(e.getClickedBlock().getType())) {
+		if(axes.contains(holdItem) && logs.contains(e.getClickedBlock().getType())) {
+			p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+    		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
+    	} else if(pickaxes.contains(holdItem) && ores.contains(e.getClickedBlock().getType())) {
+			p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
     		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
-    	} else p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+    	} else {
+    		p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+    	}
     	
 	}
 	
@@ -83,11 +85,9 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		
 		Player p = e.getPlayer();
 		
-		if(e.getBlock().getType() == Material.LOG) {
-			if(!axes.contains(p.getItemInHand().getType())) {
-				e.setCancelled(true);
-				p.sendMessage("You Need Axe!");
-			}
+		if(e.getBlock().getType() == Material.LOG && !axes.contains(p.getItemInHand().getType())) {
+			e.setCancelled(true);
+			p.sendMessage("You Need Axe!");
 		}
 	}
 }
