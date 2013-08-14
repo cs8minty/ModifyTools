@@ -62,16 +62,14 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	@EventHandler
 	private void slowDigging(final PlayerInteractEvent e) {
 		
-		Player player = e.getPlayer();
-		Material holdItem = player.getItemInHand().getType();
+		Player p = e.getPlayer();
+		Material holdItem = p.getItemInHand().getType();
 
     	if(axes.contains(holdItem)) {
-    		if(e.getClickedBlock().getType() == Material.LOG) player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
+    		if(e.getClickedBlock().getType() == Material.LOG) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
     	} else if(pickaxes.contains(holdItem)) {
-    		if(ores.contains(e.getClickedBlock().getType())) player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
-    	} else {
-    		player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-		}
+    		if(ores.contains(e.getClickedBlock().getType())) p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
+    	} else p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
     	
 	}
 	
@@ -81,9 +79,7 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		Player p = e.getPlayer();
 		
 		if(e.getBlock().getType() == Material.LOG) {
-			if(!axes.contains(p.getItemInHand().getType())) {
-				e.setCancelled(true);
-			}
+			if(!axes.contains(p.getItemInHand().getType())) e.setCancelled(true);
 		}
 		
 	}
