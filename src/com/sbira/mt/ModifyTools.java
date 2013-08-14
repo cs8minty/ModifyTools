@@ -84,8 +84,6 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		if(e.getBlock().getType() == Material.LOG) {
 			if(!axes.contains(p.getItemInHand().getType())) e.setCancelled(true);
 			else p.sendMessage("You Need Axe!");
-			}
 		}
-		
 	}
 }
