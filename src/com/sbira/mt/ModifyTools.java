@@ -19,8 +19,10 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	public final Logger log = Logger.getLogger("Minecraft");
 	private List<Material> axes = new ArrayList<Material>();
 	private List<Material> pickaxes = new ArrayList<Material>();
+	private List<Material> spades = new ArrayList<Material>();
 	private List<Material> ores = new ArrayList<Material>();
 	private List<Material> logs = new ArrayList<Material>();
+	private List<Material> dirts = new ArrayList<Material>();
 	
 	@Override
 	public void onEnable() {
@@ -50,17 +52,41 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		pickaxes.add(Material.GOLD_PICKAXE);
 		pickaxes.add(Material.DIAMOND_PICKAXE);
 		
-		//ores.add(Material.COAL_ORE);
+		spades.add(Material.WOOD_SPADE);
+		spades.add(Material.STONE_SPADE);
+		spades.add(Material.IRON_SPADE);
+		spades.add(Material.GOLD_SPADE);
+		spades.add(Material.DIAMOND_SPADE);
+		
+		ores.add(Material.COAL_ORE);
 		ores.add(Material.IRON_ORE);
 		ores.add(Material.GOLD_ORE);
 		ores.add(Material.DIAMOND_ORE);
-		//ores.add(Material.REDSTONE_ORE);
+		ores.add(Material.REDSTONE_ORE);
 		ores.add(Material.LAPIS_ORE);
 		ores.add(Material.OBSIDIAN);
 		
 		logs.add(Material.LOG);
 		
-	}	
+		dirts.add(Material.DIRT);
+		dirts.add(Material.GRASS);
+		dirts.add(Material.GRAVEL);
+		dirts.add(Material.MYCEL);
+		dirts.add(Material.SAND);
+		dirts.add(Material.SNOW);
+		dirts.add(Material.CLAY);
+		dirts.add(Material.SOUL_SAND);
+		
+	}
+	
+	private void addSlow(Player player, int level) {
+		removeSlow(player);
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, level));
+	}
+	
+	private void removeSlow(Player player) {
+		player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+	}
 	
 	@EventHandler
 	private void slowDigging(PlayerInteractEvent e) {
@@ -68,15 +94,11 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		Player p = e.getPlayer();
 		Material holdItem = p.getItemInHand().getType();
 		
-		if(axes.contains(holdItem) && logs.contains(e.getClickedBlock().getType())) {
-			p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-    		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
-    	} else if(pickaxes.contains(holdItem) && ores.contains(e.getClickedBlock().getType())) {
-			p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-    		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
-    	} else {
-    		p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-    	}
+		if(axes.contains(holdItem) && logs.contains(e.getClickedBlock().getType())) addSlow(p, 3);
+    	else if(pickaxes.contains(holdItem) && ores.contains(e.getClickedBlock().getType())) addSlow(p, 2);
+    	else if(spades.contains(holdItem) && dirts.contains(e.getClickedBlock().getType())) addSlow(p, 1);
+    	else if(holdItem == Material.AIR && dirts.contains(e.getClickedBlock().getType())) addSlow(p, 3);
+    	else removeSlow(p);
     	
 	}
 	
