@@ -1,10 +1,12 @@
 package com.sbira.mt;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 public class ModifyTools extends JavaPlugin implements Listener {
 	
 	public final Logger log = Logger.getLogger("Minecraft");
+	private FileConfiguration config;
 	private List<Material> axes = new ArrayList<Material>();
 	private List<Material> pickaxes = new ArrayList<Material>();
 	private List<Material> spades = new ArrayList<Material>();
@@ -27,6 +30,7 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		
+		initConfig();
 		addMaterials();
 		getServer().getPluginManager().registerEvents(this, this);
 		
@@ -36,6 +40,23 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	public void onDisable() {
 		
 		
+	}
+	
+	private void initConfig() {
+		
+		config = this.getConfig();
+		File file = new File("plugins" + File.separator + this.getDescription().getName() + File.separator + "config.yml");
+		
+		file.mkdir();
+		
+		if(!config.contains("Message.Axe")) config.set("Message.Axe", "You Need Axe!");
+		if(!config.contains("Message.Spade")) config.set("Message.Spade", "You Need Spade!");
+		if(!config.contains("Slow.Axe")) config.set("Slow.Axe", 4);
+		if(!config.contains("Slow.PickAxe")) config.set("Slow.PickAxe", 3);
+		if(!config.contains("Slow.Spade")) config.set("Slow.Spade", 3);
+		
+		saveConfig();
+
 	}
 	
 	private void addMaterials() {
@@ -81,11 +102,18 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	
 	private void addSlow(Player player, int level) {
 		removeSlow(player);
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, level));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 72000, level - 1));
 	}
 	
 	private void removeSlow(Player player) {
 		player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+	}
+	
+	private void preventBreak(BlockBreakEvent e, String msg) {
+		Player p = e.getPlayer();
+		
+		e.setCancelled(true);
+		p.sendMessage(msg);
 	}
 	
 	@EventHandler
@@ -93,11 +121,11 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		
 		Player p = e.getPlayer();
 		Material holdItem = p.getItemInHand().getType();
+		Material block = e.getClickedBlock().getType();
 		
-		if(axes.contains(holdItem) && logs.contains(e.getClickedBlock().getType())) addSlow(p, 3);
-    	else if(pickaxes.contains(holdItem) && ores.contains(e.getClickedBlock().getType())) addSlow(p, 2);
-    	else if(spades.contains(holdItem) && dirts.contains(e.getClickedBlock().getType())) addSlow(p, 1);
-    	else if(holdItem == Material.AIR && dirts.contains(e.getClickedBlock().getType())) addSlow(p, 3);
+		if(axes.contains(holdItem) && logs.contains(block)) addSlow(p, config.getInt("Slow.Axe"));
+    	else if(pickaxes.contains(holdItem) && ores.contains(block)) addSlow(p, config.getInt("Slow.PickAxe"));
+    	else if(spades.contains(holdItem) && dirts.contains(block)) addSlow(p, config.getInt("Slow.Spade"));
     	else removeSlow(p);
     	
 	}
@@ -106,10 +134,12 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	private void onBlockBreak(BlockBreakEvent e) {
 		
 		Player p = e.getPlayer();
+		Material holdItem = p.getItemInHand().getType();
+		Material block = e.getBlock().getType();
 		
-		if(e.getBlock().getType() == Material.LOG && !axes.contains(p.getItemInHand().getType())) {
-			e.setCancelled(true);
-			p.sendMessage("You Need Axe!");
-		}
+		if(logs.contains(block) && !axes.contains(holdItem)) preventBreak(e, config.getString("Message.Axe"));
+		if(dirts.contains(block) && !spades.contains(holdItem)) preventBreak(e, config.getString("Message.Spade"));
+
 	}
+	
 }
