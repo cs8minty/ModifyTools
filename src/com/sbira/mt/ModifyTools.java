@@ -24,8 +24,9 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		
-		getServer().getPluginManager().registerEvents(this, this);
 		addMaterials();
+		getServer().getPluginManager().registerEvents(this, this);
+		
 	}
 	
 	@Override
@@ -35,6 +36,7 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	}
 	
 	private void addMaterials() {
+		
 		axes.add(Material.WOOD_AXE);
 		axes.add(Material.STONE_AXE);
 		axes.add(Material.IRON_AXE);
@@ -47,35 +49,35 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		pickaxes.add(Material.GOLD_PICKAXE);
 		pickaxes.add(Material.DIAMOND_PICKAXE);
 		
-		ores.add(Material.COAL_ORE);
+		//ores.add(Material.COAL_ORE);
 		ores.add(Material.IRON_ORE);
 		ores.add(Material.GOLD_ORE);
 		ores.add(Material.DIAMOND_ORE);
-		ores.add(Material.REDSTONE_ORE);
+		//ores.add(Material.REDSTONE_ORE);
 		ores.add(Material.LAPIS_ORE);
 		ores.add(Material.OBSIDIAN);
+		
 	}	
 	
 	@EventHandler
 	private void slowDigging(final PlayerInteractEvent e) {
-		final Player player = e.getPlayer();
-		final Material holdItem = player.getItemInHand().getType();
+		
+		Player player = e.getPlayer();
+		Material holdItem = player.getItemInHand().getType();
 
     	if(axes.contains(holdItem)) {
-    		if(e.getClickedBlock().getType() == Material.LOG) player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 6000, 3));
-    	} else {
-			player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-		}
-    	
-    	if(pickaxes.contains(holdItem)) {
-    		if(ores.contains(e.getClickedBlock().getType())) player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 6000, 2));
+    		if(e.getClickedBlock().getType() == Material.LOG) player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 3));
+    	} else if(pickaxes.contains(holdItem)) {
+    		if(ores.contains(e.getClickedBlock().getType())) player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2));
     	} else {
     		player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
 		}
+    	
 	}
 	
 	@EventHandler
 	private void onBlockBreak(BlockBreakEvent e) {
+		
 		Player p = e.getPlayer();
 		
 		if(e.getBlock().getType() == Material.LOG) {
@@ -83,5 +85,6 @@ public class ModifyTools extends JavaPlugin implements Listener {
 				e.setCancelled(true);
 			}
 		}
+		
 	}
 }
