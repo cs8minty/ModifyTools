@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -117,15 +117,14 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
-	private void slowDigging(PlayerInteractEvent e) {
+	private void slowDigging(PlayerItemHeldEvent e) {
 		
 		Player p = e.getPlayer();
-		Material holdItem = p.getItemInHand().getType();
-		Material block = e.getClickedBlock().getType();
+		Material holditem = p.getInventory().getItem(e.getNewSlot()).getType();
 		
-		if(axes.contains(holdItem) && logs.contains(block)) addSlow(p, config.getInt("Slow.Axe"));
-    	else if(pickaxes.contains(holdItem) && ores.contains(block)) addSlow(p, config.getInt("Slow.PickAxe"));
-    	else if(spades.contains(holdItem) && dirts.contains(block)) addSlow(p, config.getInt("Slow.Spade"));
+		if(axes.contains(holditem)) addSlow(p, config.getInt("Slow.Axe"));
+		else if(pickaxes.contains(holditem)) addSlow(p, config.getInt("Slow.PickAxe"));
+    	else if(spades.contains(holditem)) addSlow(p, config.getInt("Slow.Spade"));
     	else removeSlow(p);
     	
 	}
