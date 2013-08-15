@@ -23,9 +23,11 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	private List<Material> axes = new ArrayList<Material>();
 	private List<Material> pickaxes = new ArrayList<Material>();
 	private List<Material> spades = new ArrayList<Material>();
+	private List<Material> hoes = new ArrayList<Material>();
 	private List<Material> ores = new ArrayList<Material>();
 	private List<Material> logs = new ArrayList<Material>();
 	private List<Material> dirts = new ArrayList<Material>();
+	private List<Material> plants = new ArrayList<Material>();
 	
 	@Override
 	public void onEnable() {
@@ -50,10 +52,13 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		file.mkdir();
 		
 		if(!config.contains("Message.Axe")) config.set("Message.Axe", "You Need Axe!");
+		if(!config.contains("Message.PickAxe")) config.set("Message.PickAxe", "You Need PickAxe!");
 		if(!config.contains("Message.Spade")) config.set("Message.Spade", "You Need Spade!");
+		if(!config.contains("Message.Hoe")) config.set("Message.Hoe", "You Need Hoe!");
 		if(!config.contains("Slow.Axe")) config.set("Slow.Axe", 4);
 		if(!config.contains("Slow.PickAxe")) config.set("Slow.PickAxe", 3);
 		if(!config.contains("Slow.Spade")) config.set("Slow.Spade", 3);
+		if(!config.contains("Slow.Hoe")) config.set("Slow.Hoe", 4);
 		
 		saveConfig();
 
@@ -64,20 +69,26 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		axes.add(Material.WOOD_AXE);
 		axes.add(Material.STONE_AXE);
 		axes.add(Material.IRON_AXE);
-		axes.add(Material.GOLD_AXE);
+		//axes.add(Material.GOLD_AXE);
 		axes.add(Material.DIAMOND_AXE);
 		
 		pickaxes.add(Material.WOOD_PICKAXE);
 		pickaxes.add(Material.STONE_PICKAXE);
 		pickaxes.add(Material.IRON_PICKAXE);
-		pickaxes.add(Material.GOLD_PICKAXE);
+		//pickaxes.add(Material.GOLD_PICKAXE);
 		pickaxes.add(Material.DIAMOND_PICKAXE);
 		
 		spades.add(Material.WOOD_SPADE);
 		spades.add(Material.STONE_SPADE);
 		spades.add(Material.IRON_SPADE);
-		spades.add(Material.GOLD_SPADE);
+		//spades.add(Material.GOLD_SPADE);
 		spades.add(Material.DIAMOND_SPADE);
+		
+		hoes.add(Material.WOOD_HOE);
+		hoes.add(Material.STONE_HOE);
+		hoes.add(Material.IRON_HOE);
+		//hoes.add(Material.GOLD_HOE);
+		hoes.add(Material.DIAMOND_HOE);
 		
 		ores.add(Material.COAL_ORE);
 		ores.add(Material.IRON_ORE);
@@ -88,8 +99,17 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		ores.add(Material.OBSIDIAN);
 		
 		logs.add(Material.LOG);
+		logs.add(Material.WOOD);
+		logs.add(Material.WORKBENCH);
+		logs.add(Material.WOOD_STAIRS);
+		logs.add(Material.WOOD_STEP);
+		logs.add(Material.WOOD_DOUBLE_STEP);
+		logs.add(Material.WOOD_PLATE);
+		logs.add(Material.FENCE);
+		logs.add(Material.FENCE_GATE);
 		
 		dirts.add(Material.DIRT);
+		dirts.add(Material.SOIL);
 		dirts.add(Material.GRASS);
 		dirts.add(Material.GRAVEL);
 		dirts.add(Material.MYCEL);
@@ -97,6 +117,15 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		dirts.add(Material.SNOW);
 		dirts.add(Material.CLAY);
 		dirts.add(Material.SOUL_SAND);
+		
+		plants.add(Material.CROPS);
+		plants.add(Material.MELON_BLOCK);
+		plants.add(Material.CACTUS);
+		plants.add(Material.CARROT);
+		plants.add(Material.POTATO);
+		plants.add(Material.PUMPKIN);
+		plants.add(Material.COCOA);
+		plants.add(Material.SUGAR_CANE_BLOCK);
 		
 	}
 	
@@ -120,12 +149,18 @@ public class ModifyTools extends JavaPlugin implements Listener {
 	private void slowDigging(PlayerItemHeldEvent e) {
 		
 		Player p = e.getPlayer();
-		Material holditem = p.getInventory().getItem(e.getNewSlot()).getType();
 		
-		if(axes.contains(holditem)) addSlow(p, config.getInt("Slow.Axe"));
-		else if(pickaxes.contains(holditem)) addSlow(p, config.getInt("Slow.PickAxe"));
-    	else if(spades.contains(holditem)) addSlow(p, config.getInt("Slow.Spade"));
-    	else removeSlow(p);
+		try {
+			Material holditem = p.getInventory().getItem(e.getNewSlot()).getType();
+			
+			if(axes.contains(holditem)) addSlow(p, config.getInt("Slow.Axe"));
+			else if(pickaxes.contains(holditem)) addSlow(p, config.getInt("Slow.PickAxe"));
+			else if(spades.contains(holditem)) addSlow(p, config.getInt("Slow.Spade"));
+			else if(hoes.contains(holditem)) addSlow(p, config.getInt("Slow.Hoe"));
+			else removeSlow(p);
+		} catch(Exception e1) {
+			removeSlow(p);
+		}
     	
 	}
 	
@@ -136,8 +171,10 @@ public class ModifyTools extends JavaPlugin implements Listener {
 		Material holdItem = p.getItemInHand().getType();
 		Material block = e.getBlock().getType();
 		
-		if(logs.contains(block) && !axes.contains(holdItem)) preventBreak(e, config.getString("Message.Axe"));
-		if(dirts.contains(block) && !spades.contains(holdItem)) preventBreak(e, config.getString("Message.Spade"));
+		if(logs.contains(block) && !axes.contains(holdItem) && holdItem != Material.GOLD_AXE) preventBreak(e, config.getString("Message.Axe"));
+		if(ores.contains(block) && !pickaxes.contains(holdItem) && holdItem != Material.GOLD_PICKAXE) preventBreak(e, config.getString("Message.PickAxe"));
+		if(dirts.contains(block) && !spades.contains(holdItem) && holdItem != Material.GOLD_SPADE) preventBreak(e, config.getString("Message.Spade"));
+		if(plants.contains(block) && !hoes.contains(holdItem) && holdItem != Material.GOLD_HOE) preventBreak(e, config.getString("Message.Hoe"));
 
 	}
 	
